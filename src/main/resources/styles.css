@@ -1,0 +1,9 @@
+
+.border-outline {
+    transition: all 1s ease;
+}
+
+.border-outline:focused {
+    -fx-border-color: #7dd3fc;
+    -fx-border-width: 2px;
+}
