@@ -76,6 +76,9 @@ public class WindowBox {
         });
 
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            System.out.println("key clicked");
+            System.out.println("text: " + event.getText());
+            System.out.println("code: " + event.getCode());
             // special character clicked. Ex. ctrl, tab, backspace
             if (event.getText().isEmpty()) {
                 // enter key clicked
