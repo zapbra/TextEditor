@@ -1,9 +1,33 @@
+* {
+    -fx-slate-50: #f8fafc;
+    -fx-slate-400: #a1a1aa;
+}
 
-.border-outline {
-    transition: all 1s ease;
+.background-light {
+    -fx-background-color: -fx-slate-50;
+}
+
+.border-left {
+    -fx-border-color: -fx-slate-400;
+    -fx-border: solid;
+    -fx-border-width: 1;
+
+
 }
 
 .border-outline:focused {
     -fx-border-color: #7dd3fc;
     -fx-border-width: 2px;
+}
+
+.bg-solid {
+    -fx-background-color: red;
+}
+
+.bold {
+    -fx-font-weight: bold;
+}
+
+.font-medium {
+    -fx-font-size: 20px;
 }

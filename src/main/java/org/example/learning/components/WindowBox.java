@@ -1,5 +1,7 @@
 package org.example.learning.components;
 
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
@@ -8,6 +10,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the main class which the user types into to draw on the screen
@@ -17,6 +20,11 @@ public class WindowBox {
      * Width of the editor Pane
      */
     public static final int WIDTH = 600;
+
+    /**
+     * Padding for the text area (pane)
+     */
+    public static final int PADDING = 8;
     /**
      * Current text row
      */
@@ -81,6 +89,10 @@ public class WindowBox {
             System.out.println("code: " + event.getCode());
             // special character clicked. Ex. ctrl, tab, backspace
             if (event.getText().isEmpty()) {
+                // delete key clicked
+                if (event.getCode().equals(KeyCode.BACK_SPACE)) {
+                    deleteLetter();
+                }
                 // enter key clicked
             } else if (event.getCode().equals(KeyCode.ENTER)) {
                 startNewLine();
@@ -101,10 +113,37 @@ public class WindowBox {
         pane.getChildren().add(textFlow);
     }
 
-    // Starts a new line below the current one when the enter key is clicked.
+    public void deleteLetter() {
+        String currentTextContent = currentText.getText();
+        ObservableList<Node> textRowChildren = textRows.get(currentRowIndex).getChildren();
+        // delete character if there is character to delete
+        if (!currentTextContent.isEmpty()) {
+            String charToRemove = String.valueOf(currentTextContent.charAt(currentTextContent.length() - 1));
+            currentText.setText(currentTextContent.substring(0, currentTextContent.length() - 1));
+            lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth() - new Text(charToRemove).getLayoutBounds().getWidth(), textRows.get(currentRowIndex).getLayoutY(), currentText.getLayoutBounds().getHeight());
+            // delete line and move cursor position up a line if no characters left in line
+        } else if (!textRowChildren.isEmpty()) {
+            if (textRowChildren.size() > 1) {
+                textRowChildren.remove(textRowChildren.size() - 1);
+                currentText = (Text) textRowChildren.get(textRowChildren.size() - 1);
+            } else {
+                deleteLine();
+            }
+        } else {
+            //deleteLine();
+        }
+
+
+    }
+
+    //
+
+    /**
+     * Starts a new line below the current one when the enter key is clicked.
+     */
     public void startNewLine() {
         currentRowIndex++;
-        updateYPos();
+        increaseYPos();
         currentText = new Text("");
         if (textRows.size() <= currentRowIndex) {
             TextFlow newTextFlow = new TextFlow();
@@ -116,9 +155,47 @@ public class WindowBox {
         lineCursor.updatePosition(0, yPos, currentText.getLayoutBounds().getHeight());
     }
 
+    /**
+     * Deletes the current text line
+     */
+    public void deleteLine() {
+        // delete line if not on first line (might need to be changed)
+        if (currentRowIndex > 0) {
+            // removes the TextFlow line
+            textRows.remove(currentRowIndex);
+            shiftLinesUp(currentRowIndex);
+            // moves the cursor one line up
+            currentRowIndex--;
+            decreaseYPos();
+            TextFlow currentTextFlow = textRows.get(currentRowIndex);
+            currentText = new Text("");
+            currentTextFlow.getChildren().add(currentText);
+            lineCursor.updatePosition(currentTextFlow.getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
+        }
+    }
+
     // update users Y position
-    public void updateYPos() {
+    public void increaseYPos() {
+        System.out.println("y pos b4 inc");
+        System.out.println(yPos);
         yPos += currentText.getLayoutBounds().getHeight();
+        System.out.println("y pos after");
+        System.out.println(yPos);
+    }
+
+    public void decreaseYPos() {
+        System.out.println("y pos b4 dec");
+        System.out.println(yPos);
+        yPos -= currentText.getLayoutBounds().getHeight();
+        System.out.println("y pos after");
+        System.out.println(yPos);
+    }
+
+    public void shiftLinesUp(int rowIndex) {
+        for (int i = rowIndex; i < textRows.size(); i++) {
+            TextFlow currentRow = textRows.get(i);
+            currentRow.setLayoutY(currentRow.getLayoutY() - currentText.getLayoutBounds().getHeight());
+        }
     }
 
 
@@ -126,9 +203,13 @@ public class WindowBox {
         return pane;
     }
 
+    public void setPane(Pane pane) {
+        this.pane = pane;
+    }
+
     // start the cursor animation and add to the pane
     public void initializeCursor() {
-        lineCursor = new LineCursor(0, 0, 10);
+        lineCursor = new LineCursor(PADDING, PADDING, 10);
         lineCursor.setStroke(Color.BLACK);
         lineCursor.startTransition();
         pane.getChildren().add(lineCursor);
