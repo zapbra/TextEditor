@@ -1,6 +1,7 @@
 * {
     -fx-slate-50: #f8fafc;
     -fx-slate-400: #a1a1aa;
+    -fx-blue-500: #3b82f6;
 }
 
 .background-light {
@@ -30,4 +31,10 @@
 
 .font-medium {
     -fx-font-size: 20px;
+}
+
+.focused-text {
+    -fx-border-width: 1px;
+    -fx-padding: 4px;
+    -fx-background-color: red !important;
 }

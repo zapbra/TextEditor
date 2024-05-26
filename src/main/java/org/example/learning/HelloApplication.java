@@ -20,10 +20,10 @@ public class HelloApplication extends Application {
         HBox root = fxmlLoader.load();
         stage.setTitle("Hello!");
 
-        WindowBox windowBox = new WindowBox();
-        ScrollPane commandBar = (ScrollPane) ControlBuilder.buildFontCommands();
-
-        root.getChildren().addAll(windowBox.getPane(), commandBar);
+//        WindowBox windowBox = new WindowBox();
+//        ScrollPane commandBar = (ScrollPane) ControlBuilder.buildFontCommands();
+//
+//        root.getChildren().addAll(windowBox.getPane(), commandBar);
 
 
         Scene scene = new Scene(root);

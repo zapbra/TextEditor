@@ -2,15 +2,23 @@ package org.example.learning.components;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.example.learning.components.glyph.TextGlyph;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RecursiveAction;
 
 /**
  * This is the main class which the user types into to draw on the screen
@@ -32,7 +40,7 @@ public class WindowBox {
     /**
      * Current text which the user is typing into
      */
-    Text currentText = new Text("");
+    TextGlyph currentText = new TextGlyph("");
     /**
      * Text objects to be drawn on the screen
      */
@@ -40,7 +48,7 @@ public class WindowBox {
     /**
      * Holds all the text elements
      */
-    Pane pane;
+    AnchorPane pane;
     /**
      * Blinking cursor
      */
@@ -50,13 +58,15 @@ public class WindowBox {
      */
     double yPos = 0;
 
-    public WindowBox() {
-        // initialize pane & set styling
-        pane = new Pane();
-        pane.setMinSize(600, 600);
-        pane.getStyleClass().add("border-outline");
+    TextGlyph focusedText = currentText;
 
-        textRows.add(new TextFlow(currentText));
+    public WindowBox(AnchorPane anchorPane) {
+
+        // initialize pane & set styling
+        pane = anchorPane;
+        pane.getStyleClass().add("border-outline");
+        textRows.add(new TextFlow());
+        createNewText(currentText);
         drawTextFlow(textRows.get(currentRowIndex));
         // add event handlers for when the user types to draw on the screen
         initializeFocusHandler();
@@ -98,12 +108,12 @@ public class WindowBox {
                 startNewLine();
                 // tab key clicked
             } else if (event.getCode().equals(KeyCode.TAB)) {
-                currentText.setText(currentText.getText() + '\t');
+                currentText.setText(currentText.getText() + "\t");
                 // alphanumerical character clicked. Update text and cursor position
             } else {
                 currentText.setText(currentText.getText() + event.getText());
                 Text text = new Text(event.getText());
-                lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth() + text.getLayoutBounds().getWidth(), textRows.get(currentRowIndex).getLayoutY(), currentText.getLayoutBounds().getHeight());
+                lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth() + text.getLayoutBounds().getWidth(), currentText.getParent().getLayoutY(), currentText.getLayoutBounds().getHeight());
             }
         });
     }
@@ -125,7 +135,7 @@ public class WindowBox {
         } else if (!textRowChildren.isEmpty()) {
             if (textRowChildren.size() > 1) {
                 textRowChildren.remove(textRowChildren.size() - 1);
-                currentText = (Text) textRowChildren.get(textRowChildren.size() - 1);
+                currentText = (TextGlyph) textRowChildren.get(textRowChildren.size() - 1);
             } else {
                 deleteLine();
             }
@@ -136,7 +146,34 @@ public class WindowBox {
 
     }
 
-    //
+    public void createNewText(TextGlyph newText) {
+        currentText.setOnMouseClicked(click -> {
+            // remove previous text from focused state
+            deFocusText(focusedText);
+            // make this text in the focused state
+            focusedText = newText;
+            focusText(focusedText);
+            // make this text the text to be updated on key click
+            currentText = newText;
+            yPos = currentText.getParent().getLayoutY();
+            lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
+        });
+
+        currentText.setOnMouseReleased(click -> {
+
+        });
+
+
+        textRows.get(currentRowIndex).getChildren().add(currentText);
+    }
+
+    public void deFocusText(TextGlyph text) {
+        text.removeBorder();
+    }
+
+    public void focusText(TextGlyph text) {
+        text.addBorder("blue");
+    }
 
     /**
      * Starts a new line below the current one when the enter key is clicked.
@@ -144,12 +181,13 @@ public class WindowBox {
     public void startNewLine() {
         currentRowIndex++;
         increaseYPos();
-        currentText = new Text("");
+        currentText = new TextGlyph("");
         if (textRows.size() <= currentRowIndex) {
             TextFlow newTextFlow = new TextFlow();
-            newTextFlow.getChildren().add(currentText);
             newTextFlow.setLayoutY(yPos);
             textRows.add(newTextFlow);
+            currentText = new TextGlyph("");
+            createNewText(currentText);
             drawTextFlow(textRows.get(currentRowIndex));
         }
         lineCursor.updatePosition(0, yPos, currentText.getLayoutBounds().getHeight());
@@ -168,7 +206,7 @@ public class WindowBox {
             currentRowIndex--;
             decreaseYPos();
             TextFlow currentTextFlow = textRows.get(currentRowIndex);
-            currentText = new Text("");
+            currentText = new TextGlyph("");
             currentTextFlow.getChildren().add(currentText);
             lineCursor.updatePosition(currentTextFlow.getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
         }
@@ -184,11 +222,7 @@ public class WindowBox {
     }
 
     public void decreaseYPos() {
-        System.out.println("y pos b4 dec");
-        System.out.println(yPos);
         yPos -= currentText.getLayoutBounds().getHeight();
-        System.out.println("y pos after");
-        System.out.println(yPos);
     }
 
     public void shiftLinesUp(int rowIndex) {
@@ -203,7 +237,7 @@ public class WindowBox {
         return pane;
     }
 
-    public void setPane(Pane pane) {
+    public void setPane(AnchorPane pane) {
         this.pane = pane;
     }
 
