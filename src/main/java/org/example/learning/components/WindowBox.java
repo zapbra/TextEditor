@@ -14,6 +14,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.example.learning.components.glyph.DoublyLinkedList;
+import org.example.learning.components.glyph.Line;
 import org.example.learning.components.glyph.TextGlyph;
 
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class WindowBox {
     /**
      * Text objects to be drawn on the screen
      */
-    private ArrayList<TextFlow> textRows = new ArrayList<>();
+    private final DoublyLinkedList textRowList = new DoublyLinkedList();
     /**
      * Holds all the text elements
      */
@@ -65,9 +67,9 @@ public class WindowBox {
         // initialize pane & set styling
         pane = anchorPane;
         pane.getStyleClass().add("border-outline");
-        textRows.add(new TextFlow());
+        textRowList.insertEnd(new Line(currentText));
         createNewText(currentText);
-        drawTextFlow(textRows.get(currentRowIndex));
+        drawTextFlow(((Line) textRowList.getCurrent()).getTextFlow());
         // add event handlers for when the user types to draw on the screen
         initializeFocusHandler();
         // draw the cursor
@@ -76,10 +78,6 @@ public class WindowBox {
 
     }
 
-    public WindowBox(ArrayList<TextFlow> textRows) {
-        super();
-        this.textRows = textRows;
-    }
 
     /**
      * Runs on initialization to start listening to keypress events
@@ -125,12 +123,12 @@ public class WindowBox {
 
     public void deleteLetter() {
         String currentTextContent = currentText.getText();
-        ObservableList<Node> textRowChildren = textRows.get(currentRowIndex).getChildren();
+        ObservableList<Node> textRowChildren = ((Line) (textRowList.getCurrent())).getTextFlow().getChildren();
         // delete character if there is character to delete
         if (!currentTextContent.isEmpty()) {
             String charToRemove = String.valueOf(currentTextContent.charAt(currentTextContent.length() - 1));
             currentText.setText(currentTextContent.substring(0, currentTextContent.length() - 1));
-            lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth() - new Text(charToRemove).getLayoutBounds().getWidth(), textRows.get(currentRowIndex).getLayoutY(), currentText.getLayoutBounds().getHeight());
+            lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth() - new Text(charToRemove).getLayoutBounds().getWidth(), ((Line) textRowList.getCurrent()).getTextFlow().getLayoutY(), currentText.getLayoutBounds().getHeight());
             // delete line and move cursor position up a line if no characters left in line
         } else if (!textRowChildren.isEmpty()) {
             if (textRowChildren.size() > 1) {
@@ -164,7 +162,6 @@ public class WindowBox {
         });
 
 
-        textRows.get(currentRowIndex).getChildren().add(currentText);
     }
 
     public void deFocusText(TextGlyph text) {
@@ -179,17 +176,15 @@ public class WindowBox {
      * Starts a new line below the current one when the enter key is clicked.
      */
     public void startNewLine() {
-        currentRowIndex++;
         increaseYPos();
         currentText = new TextGlyph("");
-        if (textRows.size() <= currentRowIndex) {
-            TextFlow newTextFlow = new TextFlow();
-            newTextFlow.setLayoutY(yPos);
-            textRows.add(newTextFlow);
-            currentText = new TextGlyph("");
-            createNewText(currentText);
-            drawTextFlow(textRows.get(currentRowIndex));
-        }
+        TextFlow newTextFlow = new TextFlow(currentText);
+        newTextFlow.setLayoutY(yPos);
+        textRowList.insertEnd(new Line(newTextFlow));
+        textRowList.increaseCurrent();
+
+        createNewText(currentText);
+        drawTextFlow(((Line) textRowList.getCurrent()).getTextFlow());
         lineCursor.updatePosition(0, yPos, currentText.getLayoutBounds().getHeight());
     }
 
@@ -200,12 +195,12 @@ public class WindowBox {
         // delete line if not on first line (might need to be changed)
         if (currentRowIndex > 0) {
             // removes the TextFlow line
-            textRows.remove(currentRowIndex);
+            textRowList.remove(currentRowIndex);
             shiftLinesUp(currentRowIndex);
             // moves the cursor one line up
             currentRowIndex--;
             decreaseYPos();
-            TextFlow currentTextFlow = textRows.get(currentRowIndex);
+            TextFlow currentTextFlow = ((Line) textRowList.getCurrent()).getTextFlow();
             currentText = new TextGlyph("");
             currentTextFlow.getChildren().add(currentText);
             lineCursor.updatePosition(currentTextFlow.getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
@@ -226,8 +221,8 @@ public class WindowBox {
     }
 
     public void shiftLinesUp(int rowIndex) {
-        for (int i = rowIndex; i < textRows.size(); i++) {
-            TextFlow currentRow = textRows.get(i);
+        for (int i = rowIndex; i < textRowList.size(); i++) {
+            TextFlow currentRow = ((Line) textRowList.get(i)).getTextFlow();
             currentRow.setLayoutY(currentRow.getLayoutY() - currentText.getLayoutBounds().getHeight());
         }
     }
