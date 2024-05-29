@@ -39,10 +39,45 @@ class DoublyLinkedListTest {
 
     @Test
     void remove() {
+        // test the remove by index method
         DoublyLinkedList doublyLinkedList = generateList();
         doublyLinkedList.remove(0);
         TestListNode firstNode = (TestListNode) doublyLinkedList.getFirst();
         assertEquals("node 2", firstNode.getValue(), "First node value should equal 'node 2'");
+
+        // test the remove by node method
+        TestListNode fourthNode = (TestListNode) doublyLinkedList.get(2);
+        assertEquals("node 4", fourthNode.getValue(), "list.get(2) should equal 'node 4'");
+
+        doublyLinkedList.remove(fourthNode);
+        TestListNode fifthNode = (TestListNode) doublyLinkedList.get(2);
+        assertEquals("node 5", fifthNode.getValue(), "list.get(2) should equal `node 5`");
+
+    }
+
+    @Test
+    void setCurrent() {
+        DoublyLinkedList doublyLinkedList = generateList();
+        TestListNode node3 = (TestListNode) doublyLinkedList.get(2);
+        assertEquals("node 3", node3.getValue(), "list.get(2) should equal 'node 3'");
+
+        doublyLinkedList.setCurrent(2);
+        node3 = (TestListNode) doublyLinkedList.getCurrent();
+        assertEquals("node 3", node3.getValue(), "list.getCurrent() should equal 'node 3'");
+
+        TestListNode node4 = (TestListNode) doublyLinkedList.get(3);
+        doublyLinkedList.setCurrent(node4);
+        assertEquals("node 4", ((TestListNode) doublyLinkedList.getCurrent()).getValue(), "list.getCurrent() should equal 'node 4'");
+
+    }
+
+    @Test
+    void getCurrent() {
+        DoublyLinkedList doublyLinkedList = generateList();
+        TestListNode node1 = (TestListNode) doublyLinkedList.getCurrent();
+        assertEquals("node 1", node1.getValue(), "list.getCurrent() should equal 'node 1'");
+
+
     }
 
     @Test

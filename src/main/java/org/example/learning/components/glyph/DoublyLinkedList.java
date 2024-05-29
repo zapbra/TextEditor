@@ -30,6 +30,7 @@ public class DoublyLinkedList {
             tail = node;
             curNode = node;
         }
+
         size++;
     }
 
@@ -48,20 +49,6 @@ public class DoublyLinkedList {
         size++;
     }
 
-
-    public void remove(ListNode node) {
-        ListNode prevNode = node.prev;
-        ListNode nextNode = node.next;
-        if (node == head) {
-            head = null;
-        } else if (node == tail) {
-            tail = null;
-        }
-        if (node == curNode) {
-            curNode = nextNode;
-        }
-
-    }
 
     /**
      * Returns the node from list based on index.
@@ -87,6 +74,30 @@ public class DoublyLinkedList {
 
 
         return curNode;
+    }
+
+    public void remove(ListNode node) {
+        ListNode nextNode = node.next;
+        ListNode prevNode = node.prev;
+        if (nextNode != null) {
+            nextNode.prev = prevNode;
+        }
+        if (prevNode != null) {
+            prevNode.next = nextNode;
+        }
+
+        if (node == curNode) {
+            curNode = prevNode;
+        }
+
+        if (node == head) {
+            head = nextNode;
+        }
+        if (node == tail) {
+            tail = prevNode;
+        }
+
+        size--;
     }
 
     /**
@@ -116,6 +127,10 @@ public class DoublyLinkedList {
         nextNode.prev = prevNode;
         prevNode.next = nextNode;
 
+        if (this.curNode == curNode) {
+            this.curNode = prevNode;
+        }
+
         if (index == 0) {
             head = nextNode;
         } else if (index == size - 1) {
@@ -139,6 +154,18 @@ public class DoublyLinkedList {
 
     public ListNode getCurrent() {
         return curNode;
+    }
+
+    public void setCurrent(ListNode node) {
+        curNode = node;
+    }
+
+    public void setCurrent(int index) {
+        ListNode newNode = get(index);
+        if (newNode != null) {
+            curNode = newNode;
+        }
+
     }
 
     public void increaseCurrent() {

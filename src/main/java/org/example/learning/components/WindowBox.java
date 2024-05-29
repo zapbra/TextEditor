@@ -16,6 +16,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import org.example.learning.components.glyph.DoublyLinkedList;
 import org.example.learning.components.glyph.Line;
+import org.example.learning.components.glyph.ListNode;
 import org.example.learning.components.glyph.TextGlyph;
 
 import java.util.ArrayList;
@@ -36,17 +37,13 @@ public class WindowBox {
      */
     public static final int PADDING = 8;
     /**
-     * Current text row
-     */
-    private int currentRowIndex = 0;
-    /**
      * Current text which the user is typing into
      */
     TextGlyph currentText = new TextGlyph("");
     /**
      * Text objects to be drawn on the screen
      */
-    private final DoublyLinkedList textRowList = new DoublyLinkedList();
+    private DoublyLinkedList textRowList = new DoublyLinkedList();
     /**
      * Holds all the text elements
      */
@@ -62,8 +59,8 @@ public class WindowBox {
 
     TextGlyph focusedText = currentText;
 
-    public WindowBox(AnchorPane anchorPane) {
-
+    public WindowBox(AnchorPane anchorPane, DoublyLinkedList textRowList) {
+        this.textRowList = textRowList;
         // initialize pane & set styling
         pane = anchorPane;
         pane.getStyleClass().add("border-outline");
@@ -137,11 +134,7 @@ public class WindowBox {
             } else {
                 deleteLine();
             }
-        } else {
-            //deleteLine();
         }
-
-
     }
 
     public void createNewText(TextGlyph newText) {
@@ -193,12 +186,12 @@ public class WindowBox {
      */
     public void deleteLine() {
         // delete line if not on first line (might need to be changed)
-        if (currentRowIndex > 0) {
+        if (textRowList.getCurrent() != textRowList.getFirst()) {
             // removes the TextFlow line
-            textRowList.remove(currentRowIndex);
-            shiftLinesUp(currentRowIndex);
+            textRowList.remove(textRowList.getCurrent());
+
+            shiftLinesUp(textRowList.getCurrent());
             // moves the cursor one line up
-            currentRowIndex--;
             decreaseYPos();
             TextFlow currentTextFlow = ((Line) textRowList.getCurrent()).getTextFlow();
             currentText = new TextGlyph("");
@@ -220,11 +213,13 @@ public class WindowBox {
         yPos -= currentText.getLayoutBounds().getHeight();
     }
 
-    public void shiftLinesUp(int rowIndex) {
-        for (int i = rowIndex; i < textRowList.size(); i++) {
-            TextFlow currentRow = ((Line) textRowList.get(i)).getTextFlow();
+    public void shiftLinesUp(ListNode node) {
+        while (node.hasNext()) {
+            TextFlow currentRow = ((Line) node).getTextFlow();
             currentRow.setLayoutY(currentRow.getLayoutY() - currentText.getLayoutBounds().getHeight());
+            node = node.getNext();
         }
+
     }
 
 
