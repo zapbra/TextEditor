@@ -13,47 +13,44 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
-      fx:controller="org.example.learning.HelloController" prefWidth="800.0" xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.learning.HelloController">
     <padding>
-        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
     </padding>
     <children>
         <ScrollPane prefWidth="600.0">
             <content>
-                <AnchorPane fx:id="textAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="581.0" prefWidth="590.0"/>
+                <AnchorPane fx:id="textAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="581.0" prefWidth="590.0" />
             </content>
         </ScrollPane>
         <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
             <content>
-                <VBox prefHeight="581.0" prefWidth="190.0" spacing="8.0" styleClass="bold"
-                      stylesheets="@../../../styles.css">
+                <VBox prefHeight="581.0" prefWidth="190.0" spacing="8.0" styleClass="bold" stylesheets="@../../../styles.css">
                     <children>
                         <Label stylesheets="@../../../styles.css" text="Font">
                             <styleClass>
-                                <String fx:value="font-medium"/>
-                                <String fx:value="bold"/>
+                                <String fx:value="font-medium" />
+                                <String fx:value="bold" />
                             </styleClass>
                         </Label>
-                        <ComboBox fx:id="fontComboBox" prefWidth="150.0"/>
-                        <ComboBox fx:id="fontWeightComboBox" prefWidth="150.0"/>
-                        <ComboBox fx:id="fontSizeComboBox" editable="true" prefWidth="150.0"/>
+                        <ComboBox fx:id="fontComboBox" onAction="#selectFont" prefWidth="150.0" />
+                        <ComboBox fx:id="fontWeightComboBox" onAction="#selectFontWeight" prefWidth="150.0" />
+                        <ComboBox fx:id="fontSizeComboBox" editable="true" onAction="#selectFontSize" prefWidth="150.0" />
                         <HBox prefHeight="21.0" prefWidth="174.0" spacing="8.0">
                             <children>
                                 <Button fx:id="leftAlignButton" mnemonicParsing="false">
                                     <graphic>
-                                        <FontIcon iconLiteral="mdoal-format_align_left"/>
+                                        <FontIcon iconLiteral="mdoal-format_align_left" />
                                     </graphic>
                                 </Button>
                                 <Button fx:id="horizontalCenterAlignButton" mnemonicParsing="false">
                                     <graphic>
-                                        <FontIcon iconLiteral="mdoal-format_align_center" text=""/>
+                                        <FontIcon iconLiteral="mdoal-format_align_center" text="" />
                                     </graphic>
                                 </Button>
                                 <Button fx:id="rightAlignButton" mnemonicParsing="false">
                                     <graphic>
-                                        <FontIcon iconLiteral="mdoal-format_align_right"/>
+                                        <FontIcon iconLiteral="mdoal-format_align_right" />
                                     </graphic>
                                 </Button>
                             </children>
@@ -62,53 +59,49 @@
                             <children>
                                 <Button fx:id="bottomAlignButton" mnemonicParsing="false">
                                     <graphic>
-                                        <FontIcon iconLiteral="mdomz-vertical_align_bottom"/>
+                                        <FontIcon iconLiteral="mdomz-vertical_align_bottom" />
                                     </graphic>
                                 </Button>
                                 <Button fx:id="verticalCenterAlignButton" mnemonicParsing="false">
                                     <graphic>
-                                        <FontIcon iconLiteral="mdomz-vertical_align_center"/>
+                                        <FontIcon iconLiteral="mdomz-vertical_align_center" />
                                     </graphic>
                                 </Button>
                                 <Button fx:id="topAlignButton" mnemonicParsing="false">
                                     <graphic>
-                                        <FontIcon iconLiteral="mdomz-vertical_align_top"/>
+                                        <FontIcon iconLiteral="mdomz-vertical_align_top" />
                                     </graphic>
                                 </Button>
                             </children>
                         </HBox>
-                        <Separator prefWidth="200.0"/>
-                        <Label text="Fill"/>
-                        <ColorPicker fx:id="colorSelect"/>
-                        <Separator prefWidth="200.0"/>
-                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="174.0" minWidth="120.0"
-                                    prefHeight="26.0" prefWidth="174.0">
+                        <Separator prefWidth="200.0" />
+                        <Label text="Fill" />
+                        <ColorPicker fx:id="colorPicker" onAction="#selectFontColor" />
+                        <Separator prefWidth="200.0" />
+                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="174.0" minWidth="120.0" prefHeight="26.0" prefWidth="174.0">
                             <children>
-                                <Label layoutY="4.0" text="Stroke"/>
-                                <Button fx:id="expandStrokeButton" layoutX="146.0" layoutY="2.0"
-                                        mnemonicParsing="false">
+                                <Label layoutY="4.0" text="Stroke" />
+                                <Button fx:id="expandStrokeButton" layoutX="146.0" layoutY="2.0" mnemonicParsing="false">
                                     <graphic>
-                                        <FontIcon iconLiteral="mdomz-plus"/>
+                                        <FontIcon iconLiteral="mdomz-plus" />
                                     </graphic>
                                 </Button>
                             </children>
                         </AnchorPane>
-                        <Separator prefWidth="200.0"/>
-                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="174.0" minWidth="120.0"
-                                    prefHeight="26.0" prefWidth="174.0">
+                        <Separator prefWidth="200.0" />
+                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="174.0" minWidth="120.0" prefHeight="26.0" prefWidth="174.0">
                             <children>
-                                <Label layoutY="4.0" text="Effects"/>
-                                <Button fx:id="expandEffectsButton" layoutX="146.0" layoutY="2.0"
-                                        mnemonicParsing="false">
+                                <Label layoutY="4.0" text="Effects" />
+                                <Button fx:id="expandEffectsButton" layoutX="146.0" layoutY="2.0" mnemonicParsing="false">
                                     <graphic>
-                                        <FontIcon iconLiteral="mdomz-plus"/>
+                                        <FontIcon iconLiteral="mdomz-plus" />
                                     </graphic>
                                 </Button>
                             </children>
                         </AnchorPane>
                     </children>
                     <padding>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                     </padding>
                 </VBox>
             </content>

@@ -39,11 +39,11 @@ public class WindowBox {
     /**
      * Current text which the user is typing into
      */
-    TextGlyph currentText = new TextGlyph("");
+    private TextGlyph currentText = new TextGlyph("");
     /**
      * Text objects to be drawn on the screen
      */
-    private DoublyLinkedList textRowList = new DoublyLinkedList();
+    private DoublyLinkedList textRowList;
     /**
      * Holds all the text elements
      */
@@ -103,10 +103,10 @@ public class WindowBox {
                 startNewLine();
                 // tab key clicked
             } else if (event.getCode().equals(KeyCode.TAB)) {
-                currentText.setText(currentText.getText() + "\t");
+                currentText.setText(currentText.getTextValue() + "\t");
                 // alphanumerical character clicked. Update text and cursor position
             } else {
-                currentText.setText(currentText.getText() + event.getText());
+                currentText.setText(currentText.getTextValue() + event.getText());
                 Text text = new Text(event.getText());
                 lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth() + text.getLayoutBounds().getWidth(), currentText.getParent().getLayoutY(), currentText.getLayoutBounds().getHeight());
             }
@@ -119,7 +119,7 @@ public class WindowBox {
     }
 
     public void deleteLetter() {
-        String currentTextContent = currentText.getText();
+        String currentTextContent = currentText.getTextValue();
         ObservableList<Node> textRowChildren = ((Line) (textRowList.getCurrent())).getTextFlow().getChildren();
         // delete character if there is character to delete
         if (!currentTextContent.isEmpty()) {
@@ -146,6 +146,9 @@ public class WindowBox {
             focusText(focusedText);
             // make this text the text to be updated on key click
             currentText = newText;
+            System.out.println("current text");
+            System.out.println(currentText.getText());
+
             yPos = currentText.getParent().getLayoutY();
             lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
         });
@@ -239,5 +242,8 @@ public class WindowBox {
         pane.getChildren().add(lineCursor);
     }
 
+    public TextGlyph getCurrentText() {
+        return currentText;
+    }
 
 }
