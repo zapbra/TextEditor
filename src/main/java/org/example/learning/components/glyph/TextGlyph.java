@@ -12,7 +12,7 @@ public class TextGlyph extends HBox {
     private double fontSize = 12;
     private Font font = Font.getDefault();
     private Color fontColor = Color.BLACK;
-    private FontWeight fontWeight;
+    private FontWeight fontWeight = FontWeight.NORMAL;
 
     public TextGlyph(String textValue) {
         this.text = new Text(textValue);
@@ -61,6 +61,10 @@ public class TextGlyph extends HBox {
         this.fontColor = fontColor;
     }
 
+    public Color getFontColor() {
+        return fontColor;
+    }
+
     public void setFontWeight(FontWeight fontWeight) {
         this.fontWeight = fontWeight;
     }
@@ -68,5 +72,6 @@ public class TextGlyph extends HBox {
     public FontWeight getFontWeight() {
         return fontWeight;
     }
+
 
 }

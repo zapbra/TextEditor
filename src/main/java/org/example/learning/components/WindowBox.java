@@ -14,10 +14,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import org.example.learning.components.glyph.DoublyLinkedList;
-import org.example.learning.components.glyph.Line;
-import org.example.learning.components.glyph.ListNode;
-import org.example.learning.components.glyph.TextGlyph;
+import org.example.learning.components.glyph.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +54,12 @@ public class WindowBox {
      */
     double yPos = 0;
 
+    ControlPanel fontControlPanel;
     TextGlyph focusedText = currentText;
 
-    public WindowBox(AnchorPane anchorPane, DoublyLinkedList textRowList) {
+    public WindowBox(AnchorPane anchorPane, DoublyLinkedList textRowList, ControlPanel fontControlPanel) {
         this.textRowList = textRowList;
+        this.fontControlPanel = fontControlPanel;
         // initialize pane & set styling
         pane = anchorPane;
         pane.getStyleClass().add("border-outline");
@@ -146,9 +145,7 @@ public class WindowBox {
             focusText(focusedText);
             // make this text the text to be updated on key click
             currentText = newText;
-            System.out.println("current text");
-            System.out.println(currentText.getText());
-
+            fontControlPanel.setStyles(currentText);
             yPos = currentText.getParent().getLayoutY();
             lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
         });

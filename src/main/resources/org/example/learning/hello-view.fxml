@@ -35,7 +35,24 @@
                         </Label>
                         <ComboBox fx:id="fontComboBox" onAction="#selectFont" prefWidth="150.0" />
                         <ComboBox fx:id="fontWeightComboBox" onAction="#selectFontWeight" prefWidth="150.0" />
-                        <ComboBox fx:id="fontSizeComboBox" editable="true" onAction="#selectFontSize" prefWidth="150.0" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="174.0" spacing="4.0">
+                     <children>
+                              <ComboBox fx:id="fontSizeComboBox" editable="true" onAction="#selectFontSize" prefHeight="26.0" prefWidth="117.0" />
+                        <Button fx:id="minusFontSizeButton" mnemonicParsing="false" onAction="#decrementFontSize">
+                           <graphic>
+                              <FontIcon iconLiteral="mdomz-minus" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="plusFontSizeButton" mnemonicParsing="false" onAction="#incrementFontSize">
+                           <graphic>
+                              <FontIcon iconLiteral="mdmz-plus" />
+                           </graphic>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets top="8.0" />
+                     </padding>
+                  </HBox>
                         <HBox prefHeight="21.0" prefWidth="174.0" spacing="8.0">
                             <children>
                                 <Button fx:id="leftAlignButton" mnemonicParsing="false">

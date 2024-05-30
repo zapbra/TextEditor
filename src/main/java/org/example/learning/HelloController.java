@@ -2,6 +2,7 @@ package org.example.learning;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -11,17 +12,23 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import org.example.learning.components.WindowBox;
+import org.example.learning.components.glyph.ControlPanel;
 import org.example.learning.components.glyph.DoublyLinkedList;
+import org.example.learning.components.glyph.FontControlPanel;
 import org.example.learning.components.glyph.TextGlyph;
 import org.example.learning.components.uibuilders.ControlBuilder;
 
 import java.util.Arrays;
 
 public class HelloController {
+    private static final String defaultFont = Font.getDefault().getName();
     String[] fontWeightArray = new String[]{"Thin", "Extra Light", "Light", "Regular", "Medium", "Semi Bold",
             "Bold", "Extra Bold", "Black"};
+    private static final String defaultFontWeight = "Regular";
     Double[] fontSizes = new Double[]{10.0, 11.0, 12.0, 13.0, 14.0, 15.0,
             16.0, 20.0, 24.0, 32.0, 36.0, 40.0, 48.0, 64.0, 96.0, 128.0};
+    private static final double defaultFontSize = 12;
+    private static final Color defaultColor = Color.BLACK;
     /**
      * Text objects to be drawn on the screen
      */
@@ -46,20 +53,35 @@ public class HelloController {
     @FXML
     ColorPicker colorPicker;
 
+    @FXML
+    Button plusFontSizeButton;
+
+    @FXML
+    Button minusFontSizeButton;
+
+    ControlPanel fontControlPanel;
+
 
     @FXML
     public void initialize() {
-        windowBox = new WindowBox(textAnchorPane, textRowList);
+        fontControlPanel = new FontControlPanel(fontComboBox, defaultFont,
+                fontWeightComboBox, defaultFontWeight,
+                fontSizeComboBox, defaultFontSize,
+                colorPicker, defaultColor);
+
+        windowBox = new WindowBox(textAnchorPane, textRowList, fontControlPanel);
 
         // build combo boxes for selecting font styles
         fontComboBox.setItems(FXCollections.observableArrayList(Font.getFamilies()));
-        fontComboBox.setValue(Font.getDefault().getName());
+        fontComboBox.setValue(defaultFont);
 
         fontWeightComboBox.setItems(FXCollections.observableArrayList(fontWeightArray));
-        fontWeightComboBox.setValue("Regular");
+        fontWeightComboBox.setValue(defaultFontWeight);
 
         fontSizeComboBox.setItems(FXCollections.observableArrayList(fontSizes));
-        fontSizeComboBox.setValue(12.0);
+        fontSizeComboBox.setValue(defaultFontSize);
+
+        colorPicker.setValue(defaultColor);
 
     }
 
@@ -68,8 +90,6 @@ public class HelloController {
         String font = fontComboBox.getValue();
         TextGlyph currentText = windowBox.getCurrentText();
         currentText.setFont(new Font(font, currentText.getFontSize()));
-        System.out.println("current text");
-        System.out.println(currentText.getText());
 
     }
 
@@ -112,6 +132,7 @@ public class HelloController {
         double fontSize = fontSizeComboBox.getValue();
         TextGlyph currentText = windowBox.getCurrentText();
         currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), fontSize));
+        currentText.setFontSize(fontSize);
     }
 
     @FXML
@@ -120,6 +141,31 @@ public class HelloController {
         TextGlyph currentText = windowBox.getCurrentText();
         currentText.getText().setFill(selectedColor);
         currentText.setFontColor(selectedColor);
+    }
+
+    @FXML
+    public void incrementFontSize() {
+        TextGlyph currentText = windowBox.getCurrentText();
+        double newFontSize = currentText.getFontSize() + 1;
+        currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), newFontSize));
+        currentText.setFontSize(newFontSize);
+
+        fontSizeComboBox.setValue(newFontSize);
+
+    }
+
+    @FXML
+    public void decrementFontSize() {
+        TextGlyph currentText = windowBox.getCurrentText();
+        double newFontSize = currentText.getFontSize() + -1;
+        if (newFontSize < 0) {
+            return;
+        }
+        currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), newFontSize));
+        currentText.setFontSize(newFontSize);
+
+        fontSizeComboBox.setValue(newFontSize);
+
     }
 
 
