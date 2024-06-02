@@ -7,7 +7,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-public class TextGlyph extends HBox {
+public class TextGlyph extends HBox implements Element {
     private Text text;
     private double fontSize = 12;
     private Font font = Font.getDefault();

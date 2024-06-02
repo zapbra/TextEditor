@@ -55,15 +55,19 @@ public class WindowBox {
     double yPos = 0;
 
     ControlPanel fontControlPanel;
-    TextGlyph focusedText = currentText;
+    Element focusedElement = currentText;
 
-    public WindowBox(AnchorPane anchorPane, DoublyLinkedList textRowList, ControlPanel fontControlPanel) {
+    public WindowBox(AnchorPane anchorPane, DoublyLinkedList textRowList, ControlPanel fontControlPanel, LineCursor lineCursor) {
         this.textRowList = textRowList;
         this.fontControlPanel = fontControlPanel;
+        this.lineCursor = lineCursor;
         // initialize pane & set styling
         pane = anchorPane;
         pane.getStyleClass().add("border-outline");
-        textRowList.insertEnd(new Line(currentText));
+        TextFlow newTextFlow = new TextFlow(currentText);
+        Line newLine = new Line(newTextFlow);
+        createLine(newLine, newTextFlow);
+        textRowList.insertEnd(newLine);
         createNewText(currentText);
         drawTextFlow(((Line) textRowList.getCurrent()).getTextFlow());
         // add event handlers for when the user types to draw on the screen
@@ -137,12 +141,20 @@ public class WindowBox {
     }
 
     public void createNewText(TextGlyph newText) {
+        newText.getText().boundsInLocalProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("text height");
+            System.out.println(newText.getHeight());
+        });
+
         currentText.setOnMouseClicked(click -> {
+            // Prevent event from being called to parent TextFlow, this way the click affect applies to the
+            // Text, instead of the TextFlow
+            click.consume();
             // remove previous text from focused state
-            deFocusText(focusedText);
+            deFocusElement(focusedElement);
             // make this text in the focused state
-            focusedText = newText;
-            focusText(focusedText);
+            focusedElement = newText;
+            focusElement(focusedElement);
             // make this text the text to be updated on key click
             currentText = newText;
             fontControlPanel.setStyles(currentText);
@@ -157,11 +169,11 @@ public class WindowBox {
 
     }
 
-    public void deFocusText(TextGlyph text) {
+    public void deFocusElement(Element text) {
         text.removeBorder();
     }
 
-    public void focusText(TextGlyph text) {
+    public void focusElement(Element text) {
         text.addBorder("blue");
     }
 
@@ -172,13 +184,27 @@ public class WindowBox {
         increaseYPos();
         currentText = new TextGlyph("");
         TextFlow newTextFlow = new TextFlow(currentText);
-        newTextFlow.setLayoutY(yPos);
-        textRowList.insertEnd(new Line(newTextFlow));
+        Line newLine = new Line(newTextFlow);
+        createLine(newLine, newTextFlow);
+
+        textRowList.insertEnd(newLine);
         textRowList.increaseCurrent();
 
         createNewText(currentText);
         drawTextFlow(((Line) textRowList.getCurrent()).getTextFlow());
         lineCursor.updatePosition(0, yPos, currentText.getLayoutBounds().getHeight());
+    }
+
+    public void createLine(Line newLine, TextFlow newTextFlow) {
+        // set text flow to always be 100% width of parent pane
+        newTextFlow.prefWidthProperty().bind(pane.prefWidthProperty());
+        newTextFlow.setLayoutY(yPos);
+        newTextFlow.setOnMouseClicked(click -> {
+            System.out.println("line clicked");
+            deFocusElement(focusedElement);
+            focusedElement = newLine;
+            focusElement(newLine);
+        });
     }
 
     /**
@@ -237,6 +263,10 @@ public class WindowBox {
         lineCursor.setStroke(Color.BLACK);
         lineCursor.startTransition();
         pane.getChildren().add(lineCursor);
+    }
+
+    public void updateLineCursor() {
+        lineCursor.updatePosition(((Line) textRowList.getCurrent()).getTextFlow().getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
     }
 
     public TextGlyph getCurrentText() {
