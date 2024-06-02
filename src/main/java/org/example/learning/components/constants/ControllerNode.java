@@ -1,0 +1,18 @@
+
+package org.example.learning.components.constants;
+
+public enum ControllerNode {
+    HORIZONTAL_LEFT_ALIGN,
+    HORIZONTAL_CENTER_ALIGN,
+    HORIZONTAL_RIGHT_ALIGN,
+    VERTICAL_TOP_ALIGN,
+    VERTICAL_CENTER_ALIGN,
+    VERTICAL_BOTTOM_ALIGN,
+    COLOR_PICKER,
+    FONT,
+    FONT_WEIGHT,
+    FONT_SIZE,
+    FONT_INCREASE_SIZE,
+    FONT_DECREASE_SIZE,
+
+}

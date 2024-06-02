@@ -157,7 +157,7 @@ public class WindowBox {
             focusElement(focusedElement);
             // make this text the text to be updated on key click
             currentText = newText;
-            fontControlPanel.setStyles(currentText);
+            // fontControlPanel.setStyles(currentText);
             yPos = currentText.getParent().getLayoutY();
             lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
         });

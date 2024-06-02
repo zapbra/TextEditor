@@ -12,6 +12,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import org.example.learning.components.LineCursor;
 import org.example.learning.components.WindowBox;
+import org.example.learning.components.constants.ControllerNode;
 import org.example.learning.components.glyph.ControlPanel;
 import org.example.learning.components.glyph.DoublyLinkedList;
 import org.example.learning.components.glyph.FontControlPanel;
@@ -86,6 +87,42 @@ public class HelloController {
         windowBox = new WindowBox(textAnchorPane, textRowList, fontControlPanel, lineCursor);
         controlBuilder = new ControlBuilder(sidebarVBox);
         controlBuilder.buildFontCommandBar();
+
+        // dynamically increase font size function
+        ComboBox<Double> fontSizeComboBox = (ComboBox<Double>) controlBuilder.getNode(ControllerNode.FONT_SIZE);
+        Button increaseFontSizeButton = (Button) controlBuilder.getNode(ControllerNode.FONT_INCREASE_SIZE);
+        controlBuilder.addFunction("increaseFontSize", () -> {
+            TextGlyph currentText = windowBox.getCurrentText();
+            double newFontSize = currentText.getFontSize() + 1;
+            currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), newFontSize));
+            currentText.setFontSize(newFontSize);
+            if (fontSizeComboBox != null) {
+                fontSizeComboBox.setValue(newFontSize);
+            }
+        });
+
+        if (increaseFontSizeButton != null) {
+            increaseFontSizeButton.setOnAction(click -> {
+                controlBuilder.executeFunction("increaseFontSize");
+            });
+        }
+
+        // dynamically decrease font size function
+        Button decreaseFontSizeButton = (Button) controlBuilder.getNode(ControllerNode.FONT_DECREASE_SIZE);
+        controlBuilder.addFunction("decreaseFontSize", () -> {
+            TextGlyph currentText = windowBox.getCurrentText();
+            double newFontSize = currentText.getFontSize() - 1;
+            currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), newFontSize));
+            currentText.setFontSize(newFontSize);
+            if (fontSizeComboBox != null) {
+                fontSizeComboBox.setValue(newFontSize);
+            }
+        });
+        if (decreaseFontSizeButton != null) {
+            decreaseFontSizeButton.setOnAction(click -> {
+                controlBuilder.executeFunction("decreaseFontSize");
+            });
+        }
 
 //        // build combo boxes for selecting font styles
 //        fontComboBox.setItems(FXCollections.observableArrayList(Font.getFamilies()));

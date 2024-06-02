@@ -8,12 +8,16 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import org.example.learning.components.constants.ControllerNode;
+import org.example.learning.components.glyph.DynamicFunction;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ControlBuilder {
     private final List<String> fontList = Font.getFamilies();
@@ -28,10 +32,29 @@ public class ControlBuilder {
 
     private VBox sidebarVBox;
 
+    private Map<String, DynamicFunction> functions = new HashMap<>();
+    private Map<ControllerNode, Node> nodes = new HashMap<>();
+
     public ControlBuilder(VBox sidebarVBox) {
         this.sidebarVBox = sidebarVBox;
     }
 
+    public void addFunction(String name, DynamicFunction function) {
+        functions.put(name, function);
+    }
+
+    public void executeFunction(String name) {
+        DynamicFunction function = functions.get(name);
+        if (function != null) {
+            function.execute();
+        } else {
+            System.out.println("Function not found!");
+        }
+    }
+
+    public Node getNode(ControllerNode name) {
+        return nodes.get(name);
+    }
 
     public void buildAlignmentCommands() {
 
@@ -41,16 +64,19 @@ public class ControlBuilder {
         FontIcon leftAlignmentIcon = new FontIcon(Material2AL.ALIGN_HORIZONTAL_LEFT);
         Button leftAlignmentButton = new Button();
         leftAlignmentButton.setGraphic(leftAlignmentIcon);
+        nodes.put(ControllerNode.HORIZONTAL_LEFT_ALIGN, leftAlignmentButton);
 
         // center alignment button
         FontIcon centerAlignmentIcon = new FontIcon(Material2AL.ALIGN_HORIZONTAL_CENTER);
         Button centerAlignmentButton = new Button();
         centerAlignmentButton.setGraphic(centerAlignmentIcon);
+        nodes.put(ControllerNode.HORIZONTAL_CENTER_ALIGN, centerAlignmentButton);
 
         // right alignment button
         FontIcon rightAlignmentIcon = new FontIcon(Material2AL.ALIGN_HORIZONTAL_RIGHT);
         Button rightAlignmentButton = new Button();
         rightAlignmentButton.setGraphic(rightAlignmentIcon);
+        nodes.put(ControllerNode.HORIZONTAL_RIGHT_ALIGN, rightAlignmentButton);
 
         // create the horizontal alignment h box and populate it
         HBox horizontalAlignmentHBox = new HBox();
@@ -64,16 +90,19 @@ public class ControlBuilder {
         FontIcon topAlignmentIcon = new FontIcon(Material2AL.ALIGN_VERTICAL_TOP);
         Button topAlignmentButton = new Button();
         topAlignmentButton.setGraphic(topAlignmentIcon);
+        nodes.put(ControllerNode.VERTICAL_TOP_ALIGN, topAlignmentButton);
 
         // center vertical alignment button
         FontIcon centerVerticalAlignmentIcon = new FontIcon(Material2AL.ALIGN_VERTICAL_CENTER);
         Button centerVerticalAlignmentButton = new Button();
         centerVerticalAlignmentButton.setGraphic(centerVerticalAlignmentIcon);
+        nodes.put(ControllerNode.VERTICAL_CENTER_ALIGN, centerVerticalAlignmentButton);
 
         // right alignment button
         FontIcon bottomAlignmentIcon = new FontIcon(Material2AL.ALIGN_VERTICAL_BOTTOM);
         Button bottomAlignmentButton = new Button();
         bottomAlignmentButton.setGraphic(bottomAlignmentIcon);
+        nodes.put(ControllerNode.VERTICAL_BOTTOM_ALIGN, bottomAlignmentButton);
 
         // create the horizontal alignment h box and populate it
         HBox verticalAlignmentHBox = new HBox();
@@ -98,6 +127,7 @@ public class ControlBuilder {
         // create color picker
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.setValue(defaultColor);
+        nodes.put(ControllerNode.COLOR_PICKER, colorPicker);
 
         sidebarVBox.getChildren().addAll(separator, colorLabel, colorPicker);
     }
@@ -155,10 +185,6 @@ public class ControlBuilder {
         fontComboBox.setValue(defaultFont);
         fontComboBox.setMaxWidth(Double.MAX_VALUE);
         fontComboBox.setMaxWidth(160);
-        // Grid selection
-        GridPane gridPane = new GridPane();
-        gridPane.setVgap(8);
-        gridPane.setHgap(8);
 
         // Font weight combo box
         ComboBox<String> fontWeightComboBox = new ComboBox<>();
@@ -188,6 +214,11 @@ public class ControlBuilder {
         fontSizeHBox.setSpacing(8);
         fontSizeHBox.getChildren().addAll(fontSizeComboBox, minusButton, plusButton);
 
+        nodes.put(ControllerNode.FONT, fontComboBox);
+        nodes.put(ControllerNode.FONT_WEIGHT, fontWeightComboBox);
+        nodes.put(ControllerNode.FONT_SIZE, fontSizeComboBox);
+        nodes.put(ControllerNode.FONT_DECREASE_SIZE, minusButton);
+        nodes.put(ControllerNode.FONT_INCREASE_SIZE, plusButton);
 
         sidebarVBox.getChildren().addAll(label, fontComboBox, fontWeightComboBox, fontSizeHBox);
     }
