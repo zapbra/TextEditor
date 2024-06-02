@@ -43,6 +43,7 @@ public class ControlBuilder {
         functions.put(name, function);
     }
 
+
     public void executeFunction(String name) {
         DynamicFunction function = functions.get(name);
         if (function != null) {
@@ -110,8 +111,14 @@ public class ControlBuilder {
         verticalAlignmentHBox.getChildren().addAll(topAlignmentButton, centerVerticalAlignmentButton, bottomAlignmentButton);
         verticalAlignmentHBox.setSpacing(8);
 
-        sidebarVBox.getChildren().addAll(horizontalAlignmentHBox, verticalAlignmentHBox);
+        // container to hold the alignment HBoxes so it can be deleted by id
+        VBox alignmentRowHolderVBox = new VBox();
+        alignmentRowHolderVBox.setSpacing(8);
+        alignmentRowHolderVBox.setId("alignment");
+        alignmentRowHolderVBox.getChildren().addAll(horizontalAlignmentHBox, verticalAlignmentHBox);
 
+
+        sidebarVBox.getChildren().add(alignmentRowHolderVBox);
     }
 
 
@@ -129,7 +136,14 @@ public class ControlBuilder {
         colorPicker.setValue(defaultColor);
         nodes.put(ControllerNode.COLOR_PICKER, colorPicker);
 
-        sidebarVBox.getChildren().addAll(separator, colorLabel, colorPicker);
+        // container to hold the color picker + label, so it can be removed by id
+        VBox colorSectionVBox = new VBox();
+        colorSectionVBox.setId("color");
+        colorSectionVBox.setSpacing(8);
+        colorSectionVBox.getChildren().addAll(separator, colorLabel, colorPicker);
+
+
+        sidebarVBox.getChildren().add(colorSectionVBox);
     }
 
     public void buildStrokeSection() {
@@ -149,8 +163,14 @@ public class ControlBuilder {
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.getChildren().addAll(strokeLabel, expandButton);
 
+        // container to hold the stroke section, so it can be removed by id
+        VBox strokeSectionVBox = new VBox();
+        strokeSectionVBox.setId("stroke");
+        strokeSectionVBox.setSpacing(8);
+        strokeSectionVBox.getChildren().addAll(separator, anchorPane);
 
-        sidebarVBox.getChildren().addAll(separator, anchorPane);
+
+        sidebarVBox.getChildren().add(strokeSectionVBox);
     }
 
     public void buildEffectsSection() {
@@ -170,8 +190,14 @@ public class ControlBuilder {
         AnchorPane anchorPane = new AnchorPane();
         anchorPane.getChildren().addAll(strokeLabel, expandButton);
 
+        // container to hold the effects section, so it can be removed by id
+        VBox effectsSectionVBox = new VBox();
+        effectsSectionVBox.setId("effects");
+        effectsSectionVBox.setSpacing(8);
+        effectsSectionVBox.getChildren().addAll(separator, anchorPane);
 
-        sidebarVBox.getChildren().addAll(separator, anchorPane);
+
+        sidebarVBox.getChildren().add(effectsSectionVBox);
     }
 
     public void buildFontCommands() {
@@ -220,7 +246,22 @@ public class ControlBuilder {
         nodes.put(ControllerNode.FONT_DECREASE_SIZE, minusButton);
         nodes.put(ControllerNode.FONT_INCREASE_SIZE, plusButton);
 
-        sidebarVBox.getChildren().addAll(label, fontComboBox, fontWeightComboBox, fontSizeHBox);
+        // container to hold the font styling section, so it can be deleted by id
+        VBox fontSectionVBox = new VBox();
+        fontSectionVBox.setSpacing(8);
+        fontSectionVBox.setId("fontSection");
+        fontSectionVBox.getChildren().addAll(label, fontComboBox, fontWeightComboBox, fontSizeHBox);
+
+
+        sidebarVBox.getChildren().add(fontSectionVBox);
+    }
+
+    public void deleteSectionById(String id) {
+        Node node = sidebarVBox.lookup("#" + id);
+
+        if (node != null) {
+            sidebarVBox.getChildren().remove(node);
+        }
     }
 
     public void buildFontCommandBar() {

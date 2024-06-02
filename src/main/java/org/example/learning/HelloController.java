@@ -79,11 +79,6 @@ public class HelloController {
 
     @FXML
     public void initialize() {
-//        fontControlPanel = new FontControlPanel(fontComboBox, defaultFont,
-//                fontWeightComboBox, defaultFontWeight,
-//                fontSizeComboBox, defaultFontSize,
-//                colorPicker, defaultColor);
-
         windowBox = new WindowBox(textAnchorPane, textRowList, fontControlPanel, lineCursor);
         controlBuilder = new ControlBuilder(sidebarVBox);
         controlBuilder.buildFontCommandBar();
@@ -124,36 +119,69 @@ public class HelloController {
             });
         }
 
-//        // build combo boxes for selecting font styles
-//        fontComboBox.setItems(FXCollections.observableArrayList(Font.getFamilies()));
-//        fontComboBox.setValue(defaultFont);
-//
-//        fontWeightComboBox.setItems(FXCollections.observableArrayList(fontWeightArray));
-//        fontWeightComboBox.setValue(defaultFontWeight);
-//
-//        fontSizeComboBox.setItems(FXCollections.observableArrayList(fontSizes));
-//        fontSizeComboBox.setValue(defaultFontSize);
-//
-//        colorPicker.setValue(defaultColor);
+        // dynamically change font size function
+        controlBuilder.addFunction("changeFontSize", () -> {
+            double fontSize = fontSizeComboBox.getValue();
+            TextGlyph currentText = windowBox.getCurrentText();
+            currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), fontSize));
+            currentText.setFontSize(fontSize);
+            currentText.requestLayout();
+            windowBox.updateLineCursor();
+        });
 
+        if (fontSizeComboBox != null) {
+            fontSizeComboBox.setOnAction(click -> {
+                controlBuilder.executeFunction("changeFontSize");
+            });
+        }
+
+        // dynamically change font function
+        ComboBox<String> fontComboBox = (ComboBox<String>) controlBuilder.getNode(ControllerNode.FONT);
+        controlBuilder.addFunction("changeFont", () -> {
+            String font = fontComboBox.getValue();
+            TextGlyph currentText = windowBox.getCurrentText();
+            currentText.setFont(new Font(font, currentText.getFontSize()));
+        });
+
+        if (fontComboBox != null) {
+            fontComboBox.setOnAction(click -> {
+                controlBuilder.executeFunction("changeFont");
+            });
+        }
+
+        // dynamically change font weight function
+        ComboBox<String> fontWeightComboBox = (ComboBox<String>) controlBuilder.getNode(ControllerNode.FONT_WEIGHT);
+        controlBuilder.addFunction("changeFontWeight", () -> {
+            String fontWeightString = fontWeightComboBox.getValue();
+            TextGlyph currentText = windowBox.getCurrentText();
+            FontWeight fontWeight = getFontWeight(fontWeightString);
+            currentText.setFontWeight(fontWeight);
+            currentText.setFont(Font.font(currentText.getFont().getName(), fontWeight, currentText.getFontSize()));
+        });
+        if (fontWeightComboBox != null) {
+            fontWeightComboBox.setOnAction(click -> {
+                controlBuilder.executeFunction("changeFontWeight");
+            });
+        }
+
+        // dynamically change font color function
+        ColorPicker colorPicker = (ColorPicker) controlBuilder.getNode(ControllerNode.COLOR_PICKER);
+        controlBuilder.addFunction("changeFontColor", () -> {
+            Color selectedColor = colorPicker.getValue();
+            TextGlyph currentText = windowBox.getCurrentText();
+            currentText.getText().setFill(selectedColor);
+            currentText.setFontColor(selectedColor);
+        });
+
+        if (colorPicker != null) {
+            colorPicker.setOnAction(click -> {
+                controlBuilder.executeFunction("changeFontColor");
+            });
+        }
+
+        controlBuilder.deleteSectionById("effects");
     }
 
-//    @FXML
-//    public void selectFont() {
-//        String font = fontComboBox.getValue();
-//        TextGlyph currentText = windowBox.getCurrentText();
-//        currentText.setFont(new Font(font, currentText.getFontSize()));
-//
-//    }
-//
-//    @FXML
-//    public void selectFontWeight() {
-//        String fontWeightString = fontWeightComboBox.getValue();
-//        TextGlyph currentText = windowBox.getCurrentText();
-//        FontWeight fontWeight = getFontWeight(fontWeightString);
-//        currentText.setFontWeight(fontWeight);
-//        currentText.setFont(Font.font(currentText.getFont().getName(), fontWeight, currentText.getFontSize()));
-//    }
 
     public static FontWeight getFontWeight(String fontWeight) {
         switch (fontWeight) {
@@ -179,50 +207,6 @@ public class HelloController {
                 return FontWeight.NORMAL;
         }
     }
-
-//    @FXML
-//    public void selectFontSize() {
-//        double fontSize = fontSizeComboBox.getValue();
-//        TextGlyph currentText = windowBox.getCurrentText();
-//        double currentFontSize = currentText.getFontSize();
-//        currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), fontSize));
-//        currentText.setFontSize(fontSize);
-//        currentText.requestLayout();
-//        windowBox.updateLineCursor();
-//    }
-//
-//    @FXML
-//    public void selectFontColor() {
-//        Color selectedColor = colorPicker.getValue();
-//        TextGlyph currentText = windowBox.getCurrentText();
-//        currentText.getText().setFill(selectedColor);
-//        currentText.setFontColor(selectedColor);
-//    }
-
-//    @FXML
-//    public void incrementFontSize() {
-//        TextGlyph currentText = windowBox.getCurrentText();
-//        double newFontSize = currentText.getFontSize() + 1;
-//        currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), newFontSize));
-//        currentText.setFontSize(newFontSize);
-//
-//        fontSizeComboBox.setValue(newFontSize);
-//
-//    }
-
-//    @FXML
-//    public void decrementFontSize() {
-//        TextGlyph currentText = windowBox.getCurrentText();
-//        double newFontSize = currentText.getFontSize() + -1;
-//        if (newFontSize < 0) {
-//            return;
-//        }
-//        currentText.setFont(Font.font(currentText.getFont().getName(), currentText.getFontWeight(), newFontSize));
-//        currentText.setFontSize(newFontSize);
-//
-//        fontSizeComboBox.setValue(newFontSize);
-//
-//    }
 
 
 }
