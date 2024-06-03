@@ -168,16 +168,28 @@ public class DoublyLinkedList {
 
     }
 
-    public void increaseCurrent() {
+    public boolean increaseCurrent() {
         if (curNode.hasNext()) {
             curNode = curNode.next;
+            return true;
         }
+        return false;
     }
 
-    public void decreaseCurrent() {
+    public boolean decreaseCurrent() {
         if (curNode.hasPrev()) {
             curNode = curNode.prev;
+            return true;
         }
+        return false;
+    }
+
+    public boolean currentHasNext() {
+        return curNode.hasNext();
+    }
+
+    public boolean currentHasPrev() {
+        return curNode.hasPrev();
     }
 
     public int size() {

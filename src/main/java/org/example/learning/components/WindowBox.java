@@ -1,7 +1,9 @@
 package org.example.learning.components;
 
 import javafx.collections.ObservableList;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -16,6 +18,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import org.example.learning.components.glyph.*;
 
+import java.security.Key;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
@@ -56,6 +60,11 @@ public class WindowBox {
 
     ControlPanel fontControlPanel;
     Element focusedElement = currentText;
+    Scene scene;
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
 
     public WindowBox(AnchorPane anchorPane, DoublyLinkedList textRowList, ControlPanel fontControlPanel, LineCursor lineCursor) {
         this.textRowList = textRowList;
@@ -92,28 +101,76 @@ public class WindowBox {
         });
 
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            System.out.println("key clicked");
-            System.out.println("text: " + event.getText());
-            System.out.println("code: " + event.getCode());
-            // special character clicked. Ex. ctrl, tab, backspace
-            if (event.getText().isEmpty()) {
-                // delete key clicked
-                if (event.getCode().equals(KeyCode.BACK_SPACE)) {
-                    deleteLetter();
-                }
+            KeyCode keyCode = event.getCode();
+
+            if (keyCode.equals(KeyCode.RIGHT) || keyCode.equals(KeyCode.LEFT)) {
+                // move cursor left or right and update where text is typed into the current text
+                moveTextBufferWithinWord(keyCode);
+
+            } else if (keyCode.equals(KeyCode.UP) || keyCode.equals(KeyCode.DOWN)) {
+                moveUpOrDownLine(keyCode);
+            } else if (keyCode.equals(KeyCode.BACK_SPACE)) {
+                deleteLetter();
+            } else if (keyCode.equals(KeyCode.ENTER)) {
                 // enter key clicked
-            } else if (event.getCode().equals(KeyCode.ENTER)) {
                 startNewLine();
+            } else if (keyCode.equals(KeyCode.TAB)) {
                 // tab key clicked
-            } else if (event.getCode().equals(KeyCode.TAB)) {
                 currentText.setText(currentText.getTextValue() + "\t");
+            } else if (!event.getText().isEmpty()) {
                 // alphanumerical character clicked. Update text and cursor position
-            } else {
                 currentText.setText(currentText.getTextValue() + event.getText());
                 Text text = new Text(event.getText());
                 lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth() + text.getLayoutBounds().getWidth(), currentText.getParent().getLayoutY(), currentText.getLayoutBounds().getHeight());
             }
         });
+    }
+
+    public void moveUpOrDownLine(KeyCode keyDirection) {
+        if (keyDirection.equals(KeyCode.UP)) {
+            moveUpLine();
+        } else {
+            moveDownLine();
+        }
+    }
+
+    public void moveUpLine() {
+        if (textRowList.currentHasPrev()) {
+            decreaseYPos();
+            textRowList.decreaseCurrent();
+            TextFlow newTextFlowLine = ((Line) textRowList.getCurrent()).getTextFlow();
+            currentText = (TextGlyph) newTextFlowLine.getChildren().get(newTextFlowLine.getChildren().size() - 1);
+            lineCursor.updatePosition(getTextFlowChildrenWidth(newTextFlowLine), yPos, currentText.getLayoutBounds().getHeight());
+        }
+
+    }
+
+    public void moveDownLine() {
+        if (textRowList.currentHasNext()) {
+            increaseYPos();
+            textRowList.increaseCurrent();
+            TextFlow newTextFlowLine = ((Line) textRowList.getCurrent()).getTextFlow();
+            currentText = (TextGlyph) newTextFlowLine.getChildren().get(newTextFlowLine.getChildren().size() - 1);
+            lineCursor.updatePosition(getTextFlowChildrenWidth(newTextFlowLine), yPos, currentText.getLayoutBounds().getHeight());
+        }
+
+
+    }
+
+    public double getTextFlowChildrenWidth(TextFlow textFlow) {
+        double totalTextWidth = 0.0;
+
+        for (Node node : textFlow.getChildren()) {
+            if (node instanceof TextGlyph textGlyph) {
+                totalTextWidth += textGlyph.getBoundsInLocal().getWidth();
+            }
+
+        }
+        return totalTextWidth;
+    }
+
+    public void moveTextBufferWithinWord(KeyCode keyDirection) {
+        System.out.println("key moved!!");
     }
 
     // add TextFlow to the screen
@@ -160,6 +217,16 @@ public class WindowBox {
             // fontControlPanel.setStyles(currentText);
             yPos = currentText.getParent().getLayoutY();
             lineCursor.updatePosition(currentText.getLayoutX() + currentText.getLayoutBounds().getWidth(), yPos, currentText.getLayoutBounds().getHeight());
+        });
+
+        currentText.setOnMouseEntered(evt -> {
+            System.out.println("entered");
+            scene.setCursor(Cursor.HAND);
+        });
+
+        currentText.setOnMouseExited(evt -> {
+            System.out.println("Exited");
+            scene.setCursor(Cursor.DEFAULT);
         });
 
         currentText.setOnMouseReleased(click -> {
@@ -226,13 +293,10 @@ public class WindowBox {
         }
     }
 
+
     // update users Y position
     public void increaseYPos() {
-        System.out.println("y pos b4 inc");
-        System.out.println(yPos);
         yPos += currentText.getLayoutBounds().getHeight();
-        System.out.println("y pos after");
-        System.out.println(yPos);
     }
 
     public void decreaseYPos() {

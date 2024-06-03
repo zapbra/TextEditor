@@ -2,6 +2,7 @@ package org.example.learning;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -10,6 +11,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.WindowEvent;
 import org.example.learning.components.LineCursor;
 import org.example.learning.components.WindowBox;
 import org.example.learning.components.constants.ControllerNode;
@@ -83,6 +85,8 @@ public class HelloController {
         controlBuilder = new ControlBuilder(sidebarVBox);
         controlBuilder.buildFontCommandBar();
 
+        System.out.println("text anchor pane");
+        System.out.println(textAnchorPane.getScene());
         // dynamically increase font size function
         ComboBox<Double> fontSizeComboBox = (ComboBox<Double>) controlBuilder.getNode(ControllerNode.FONT_SIZE);
         Button increaseFontSizeButton = (Button) controlBuilder.getNode(ControllerNode.FONT_INCREASE_SIZE);
@@ -178,8 +182,10 @@ public class HelloController {
                 controlBuilder.executeFunction("changeFontColor");
             });
         }
+    }
 
-        controlBuilder.deleteSectionById("effects");
+    public void runSceneFunctions(Scene scene) {
+        windowBox.setScene(scene);
     }
 
 

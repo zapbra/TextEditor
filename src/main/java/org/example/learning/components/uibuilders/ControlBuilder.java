@@ -264,6 +264,10 @@ public class ControlBuilder {
         }
     }
 
+    public void deleteAllChildren() {
+        sidebarVBox.getChildren().clear();
+    }
+
     public void buildFontCommandBar() {
         buildFontCommands();
         buildAlignmentCommands();

@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.learning.components.WindowBox;
 import org.example.learning.components.uibuilders.ControlBuilder;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 
@@ -19,7 +20,7 @@ public class HelloApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         HBox root = fxmlLoader.load();
         stage.setTitle("Hello!");
-
+        HelloController controller = (HelloController) fxmlLoader.getController();
 //        WindowBox windowBox = new WindowBox();
 //        ScrollPane commandBar = (ScrollPane) ControlBuilder.buildFontCommands();
 //
@@ -31,6 +32,7 @@ public class HelloApplication extends Application {
 
         stage.setScene(scene);
         stage.show();
+        controller.runSceneFunctions(scene);
     }
 
     public static void main(String[] args) {
